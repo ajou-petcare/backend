@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import swe_group_11.pethealthmanager.DTO.UserDTO;
+import swe_group_11.pethealthmanager.DTO.UserLoginDTO;
 import swe_group_11.pethealthmanager.DTO.UserRegisterDTO;
 import swe_group_11.pethealthmanager.model.User;
 import swe_group_11.pethealthmanager.repository.UserRepository;
@@ -29,9 +30,10 @@ public class UserService {
         return mapToDTO(savedUser);
     }
 
-    public boolean validateCredentials(String username, String password){
-        Optional<User> user = userRepository.findByUsername(username);
-        return user.map(user1 -> passwordEncoder.matches(password, user1.getPassword())).orElse(false);
+    public boolean validateCredentials(UserLoginDTO userLoginDTO){
+        return userRepository.findByUsername(userLoginDTO.getUsername())
+                .map(user -> passwordEncoder.matches(userLoginDTO.getPassword(), user.getPassword()))
+                .orElse(false);
     }
 
 
