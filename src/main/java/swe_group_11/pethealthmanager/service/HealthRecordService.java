@@ -18,11 +18,15 @@ public class HealthRecordService {
         healthRecord.setRecordDate(healthRecordDTO.getRecordDate());
         healthRecord.setDiagnosis(healthRecordDTO.getDiagnosis());
         HealthRecord Record = healthRecordRepository.save(healthRecord);
-        return (/*내일 만들 DTO 전환 만들어서 넣기*/);
+        return (convertToDTO(healthRecord));
     }
 
     private HealthRecordDTO convertToDTO(HealthRecord healthRecord) {
         HealthRecordDTO healthRecordDTO = new HealthRecordDTO();
-        //내일 구현
+        healthRecordDTO.setId(healthRecord.getId());
+        healthRecordDTO.setPetId(healthRecord.getPetId());
+        healthRecordDTO.setRecordDate(healthRecord.getRecordDate());
+        healthRecordDTO.setDiagnosis(healthRecord.getDiagnosis());
+        return healthRecordDTO;
     }
 }
