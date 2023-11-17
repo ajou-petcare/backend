@@ -13,8 +13,9 @@ public class HealthRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "pet_id", nullable = false)
-    private Long petId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pet_id", nullable = false)
+    private Pet pet;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "record_date", nullable = false)

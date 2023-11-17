@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -13,14 +15,17 @@ public class Pet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "owner_id")
-    private Long ownerId;
-
     @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
     private String species;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User owner;
+
+    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HealthRecord> healthRecords;
 
 
 }
