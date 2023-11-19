@@ -1,6 +1,6 @@
 package swe_group_11.pethealthmanager.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,11 +10,12 @@ import swe_group_11.pethealthmanager.DTO.PetDTO;
 import swe_group_11.pethealthmanager.service.PetService;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/pets")
 public class PetController {
 
     //DI
-    @Autowired
+
     private PetService petService;
 
     //변경사항 받아서 view로

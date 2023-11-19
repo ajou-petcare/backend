@@ -4,27 +4,31 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swe_group_11.pethealthmanager.DTO.HealthRecordDTO;
 import swe_group_11.pethealthmanager.model.HealthRecord;
+import swe_group_11.pethealthmanager.model.Pet;
 import swe_group_11.pethealthmanager.repository.HealthRecordRepository;
+import swe_group_11.pethealthmanager.repository.PetRepository;
 
 @Service
 @RequiredArgsConstructor
 public class HealthRecordService {
 
-    private HealthRecordRepository healthRecordRepository;
+    private final HealthRecordRepository healthRecordRepository;
+    private final PetRepository petRepository; // PetRepository 추가
 
     public HealthRecordDTO createHealthRecord(HealthRecordDTO healthRecordDTO) {
+        Pet pet = petRepository.findById(healthRecordDTO.getPetid()).orElseThrow(); // Pet 찾기
         HealthRecord healthRecord = new HealthRecord();
-        healthRecord.setPetId(healthRecordDTO.getPetId());
+        healthRecord.setPet(pet); // Pet 객체 설정
         healthRecord.setRecordDate(healthRecordDTO.getRecordDate());
         healthRecord.setDiagnosis(healthRecordDTO.getDiagnosis());
-        HealthRecord Record = healthRecordRepository.save(healthRecord);
-        return (convertToDTO(healthRecord));
+        HealthRecord savedRecord = healthRecordRepository.save(healthRecord);
+        return convertToDTO(savedRecord);
     }
 
     private HealthRecordDTO convertToDTO(HealthRecord healthRecord) {
         HealthRecordDTO healthRecordDTO = new HealthRecordDTO();
         healthRecordDTO.setId(healthRecord.getId());
-        healthRecordDTO.setPetId(healthRecord.getPetId());
+        healthRecordDTO.setPetid(healthRecord.getPet().getId()); // Pet ID 설정
         healthRecordDTO.setRecordDate(healthRecord.getRecordDate());
         healthRecordDTO.setDiagnosis(healthRecord.getDiagnosis());
         return healthRecordDTO;
