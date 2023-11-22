@@ -8,12 +8,20 @@ import swe_group_11.pethealthmanager.model.Pet;
 import swe_group_11.pethealthmanager.repository.HealthRecordRepository;
 import swe_group_11.pethealthmanager.repository.PetRepository;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class HealthRecordService {
 
     private final HealthRecordRepository healthRecordRepository;
     private final PetRepository petRepository; // PetRepository 추가
+
+    public List<HealthRecordDTO> findAllHealthRecords() {
+        List<HealthRecord> records = healthRecordRepository.findAll();
+        return records.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
 
     public HealthRecordDTO createHealthRecord(HealthRecordDTO healthRecordDTO) {
         Pet pet = petRepository.findById(healthRecordDTO.getPetid()).orElseThrow(); // Pet 찾기

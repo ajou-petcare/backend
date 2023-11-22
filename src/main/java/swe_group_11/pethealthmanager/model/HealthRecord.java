@@ -24,7 +24,5 @@ public class HealthRecord {
     @Column(nullable = false)
     private String diagnosis;
 
-    @Column(name = "diagnosis_image_url")
-    private String diagnosisImageUrl;
 
 }
