@@ -1,24 +1,19 @@
 package swe_group_11.pethealthmanager.service;
 
-import ai.djl.ModelException;
 import lombok.RequiredArgsConstructor;
-import org.pytorch.IValue;
-import org.pytorch.Module;
-import org.pytorch.Tensor;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import ai.djl.Model;
-import ai.djl.inference.Predictor;
-import ai.djl.translate.TranslateException;
-import ai.djl.translate.Translator;
-import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.Date;
 
-import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import swe_group_11.pethealthmanager.DTO.HealthRecordDTO;
 import swe_group_11.pethealthmanager.model.HealthRecord;
 import swe_group_11.pethealthmanager.model.Pet;
@@ -35,10 +30,12 @@ public class CheckUpService {
 
     private PetRepository petRepository;
 
-    //
-    public HealthRecordDTO performCheckUp(Long petId, MultipartFile image) {
+    private RestTemplate restTemplate = new RestTemplate();
 
-        String diagnosis = processImage(image);
+    //
+    public HealthRecordDTO performCheckUp(Long petId, String base64Image) {
+        byte[] decodedImage = decodeImage(base64Image);
+        String diagnosis = sendImageToFlaskAPI(decodedImage);
 
         Pet pet = petRepository.findById(petId).orElseThrow(() -> new RuntimeException("Pet not found"));
         HealthRecord healthRecord = new HealthRecord();
@@ -50,17 +47,35 @@ public class CheckUpService {
         return convertToDTO(savedRecord);
     }
 
-    //이 부분에 djl 활용한 pytorch 모델 사용 or 플라스크로 DL API 만들어서 컨트롤러로 불러오는 식으로
-    private String processImage(MultipartFile image) {
+    private byte[] decodeImage(String base64Image) {
+        return Base64.getDecoder().decode(base64Image);
+    }
 
-        String diagnosis = ""; // 여기에 모델 결과값
+    private String sendImageToFlaskAPI(byte[] image) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("image", new ByteArrayResource(image) {
+            @Override
+            public String getFilename() {
+                return "image.png";
+            }
+        });
 
-        return diagnosis;
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+        String flaskApiUrl = ""; // flaskAPI 주소 만들면 넣기
+        ResponseEntity<String> response = restTemplate.postForEntity(flaskApiUrl, requestEntity, String.class);
+        return response.getBody();
     }
 
     private HealthRecordDTO convertToDTO(HealthRecord healthRecord) {
-        return ...; // 미정
+        HealthRecordDTO healthRecordDTO = new HealthRecordDTO();
+        healthRecordDTO.setId(healthRecord.getId());
+        healthRecordDTO.setPetid(healthRecord.getPet().getId()); // HealthRecord 엔티티에서 Pet ID 추출
+        healthRecordDTO.setRecordDate(healthRecord.getRecordDate());
+        healthRecordDTO.setDiagnosis(healthRecord.getDiagnosis());
+        return healthRecordDTO;
     }
 }
 

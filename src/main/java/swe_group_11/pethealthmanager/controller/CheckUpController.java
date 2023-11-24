@@ -18,8 +18,8 @@ public class CheckUpController {
     private CheckUpService checkUpService;
 
     @PostMapping
-    public ResponseEntity<HealthRecordDTO> performCheckUp(@RequestParam("petId") Long petId, @RequestParam("image") MultipartFile image) {
-        HealthRecordDTO healthRecordDTO = checkUpService.performCheckUp(petId, image);
+    public ResponseEntity<HealthRecordDTO> performCheckUp(@RequestParam("petId") Long petId, @RequestParam("image") String base64Image) {
+        HealthRecordDTO healthRecordDTO = checkUpService.performCheckUp(petId, base64Image);
         return ResponseEntity.ok(healthRecordDTO);
     }
 }
