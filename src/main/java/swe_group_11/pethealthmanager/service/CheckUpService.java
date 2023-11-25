@@ -33,7 +33,7 @@ public class CheckUpService {
     private RestTemplate restTemplate = new RestTemplate();
 
     //
-    public HealthRecordDTO performCheckUp(Long petId, String base64Image) {
+    public HealthRecordDTO performCheckUpEye(Long petId, String base64Image) {
         byte[] decodedImage = decodeImage(base64Image);
         String diagnosis = sendImageToFlaskAPI(decodedImage);
 
@@ -47,10 +47,38 @@ public class CheckUpService {
         return convertToDTO(savedRecord);
     }
 
+    public HealthRecordDTO performCheckUpSkin(Long petId, String base64Image) {
+        byte[] decodedImage = decodeImage(base64Image);
+        String diagnosis = sendImageToFlaskAPI(decodedImage);
+
+        Pet pet = petRepository.findById(petId).orElseThrow(() -> new RuntimeException("Pet not found"));
+        HealthRecord healthRecord = new HealthRecord();
+        healthRecord.setPet(pet);
+        healthRecord.setRecordDate(new Date());
+        healthRecord.setDiagnosis(diagnosis);
+
+        HealthRecord savedRecord = healthRecordRepository.save(healthRecord);
+        return convertToDTO(savedRecord);
+    }
+
+    public HealthRecordDTO performCheckUpBcs(Long petId, String base64Image) {
+        byte[] decodedImage = decodeImage(base64Image);
+        String diagnosis = sendImageToFlaskAPI(decodedImage);
+
+        Pet pet = petRepository.findById(petId).orElseThrow(() -> new RuntimeException("Pet not found"));
+        HealthRecord healthRecord = new HealthRecord();
+        healthRecord.setPet(pet);
+        healthRecord.setRecordDate(new Date());
+        healthRecord.setDiagnosis(diagnosis);
+
+        HealthRecord savedRecord = healthRecordRepository.save(healthRecord);
+        return convertToDTO(savedRecord);
+    }
     private byte[] decodeImage(String base64Image) {
         return Base64.getDecoder().decode(base64Image);
     }
 
+    //image 전달
     private String sendImageToFlaskAPI(byte[] image) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
