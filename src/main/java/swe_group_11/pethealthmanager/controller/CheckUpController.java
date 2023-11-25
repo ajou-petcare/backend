@@ -17,10 +17,24 @@ public class CheckUpController {
 
     private CheckUpService checkUpService;
 
-    @PostMapping
-    public ResponseEntity<HealthRecordDTO> performCheckUp(@RequestParam("petId") Long petId, @RequestParam("image") String base64Image) {
-        HealthRecordDTO healthRecordDTO = checkUpService.performCheckUp(petId, base64Image);
+    @PostMapping("/api/checkup/skin")
+    public ResponseEntity<HealthRecordDTO> performCheckUpEye(@RequestParam("petId") Long petId, @RequestParam("image") String base64Image) {
+        HealthRecordDTO healthRecordDTO = checkUpService.performCheckUpSkin(petId, base64Image);
         return ResponseEntity.ok(healthRecordDTO);
     }
+
+    @PostMapping("/api/checkup/eye")
+    public ResponseEntity<HealthRecordDTO> performCheckUpSkin(@RequestParam("petId") Long petId, @RequestParam("image") String base64Image) {
+        HealthRecordDTO healthRecordDTO = checkUpService.performCheckUpEye(petId, base64Image);
+        return ResponseEntity.ok(healthRecordDTO);
+    }
+
+    @PostMapping("/api/checkup/bcs")
+    public ResponseEntity<HealthRecordDTO> performCheckUpBcs(@RequestParam("petId") Long petId, @RequestParam("image") String base64Image) {
+        HealthRecordDTO healthRecordDTO = checkUpService.performCheckUpBcs(petId, base64Image);
+        return ResponseEntity.ok(healthRecordDTO);
+    }
+
+
 }
 
