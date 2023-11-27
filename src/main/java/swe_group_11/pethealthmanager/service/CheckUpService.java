@@ -24,83 +24,67 @@ import swe_group_11.pethealthmanager.repository.PetRepository;
 @RequiredArgsConstructor
 public class CheckUpService {
 
-
-    private HealthRecordRepository healthRecordRepository;
-
-
-    private PetRepository petRepository;
-
+    private final HealthRecordRepository healthRecordRepository;
+    private final PetRepository petRepository;
     private RestTemplate restTemplate = new RestTemplate();
 
-    //
-    public HealthRecordDTO performCheckUpEye(Long petId, String base64Image) {
-        byte[] decodedImage = decodeImage(base64Image);
-        String diagnosis = sendImageToFlaskAPI(decodedImage);
-
+    public HealthRecordDTO performCheckUp(Long petId, String base64Image, String checkUpType) {
         Pet pet = petRepository.findById(petId).orElseThrow(() -> new RuntimeException("Pet not found"));
-        HealthRecord healthRecord = new HealthRecord();
-        healthRecord.setPet(pet);
-        healthRecord.setRecordDate(new Date());
-        healthRecord.setDiagnosis(diagnosis);
+        String animalType = pet.getSpecies(); // 'dog' 또는 'cat'
+        byte[] decodedImage = decodeImage(base64Image);
+        String diagnosis = sendImageToModelAPI(decodedImage, animalType, checkUpType);
 
-        HealthRecord savedRecord = healthRecordRepository.save(healthRecord);
-        return convertToDTO(savedRecord);
+        return createHealthRecord(petId, diagnosis);
     }
 
-    public HealthRecordDTO performCheckUpSkin(Long petId, String base64Image) {
-        byte[] decodedImage = decodeImage(base64Image);
-        String diagnosis = sendImageToFlaskAPI(decodedImage);
-
-        Pet pet = petRepository.findById(petId).orElseThrow(() -> new RuntimeException("Pet not found"));
-        HealthRecord healthRecord = new HealthRecord();
-        healthRecord.setPet(pet);
-        healthRecord.setRecordDate(new Date());
-        healthRecord.setDiagnosis(diagnosis);
-
-        HealthRecord savedRecord = healthRecordRepository.save(healthRecord);
-        return convertToDTO(savedRecord);
-    }
-
-    public HealthRecordDTO performCheckUpBcs(Long petId, String base64Image) {
-        byte[] decodedImage = decodeImage(base64Image);
-        String diagnosis = sendImageToFlaskAPI(decodedImage);
-
-        Pet pet = petRepository.findById(petId).orElseThrow(() -> new RuntimeException("Pet not found"));
-        HealthRecord healthRecord = new HealthRecord();
-        healthRecord.setPet(pet);
-        healthRecord.setRecordDate(new Date());
-        healthRecord.setDiagnosis(diagnosis);
-
-        HealthRecord savedRecord = healthRecordRepository.save(healthRecord);
-        return convertToDTO(savedRecord);
-    }
     private byte[] decodeImage(String base64Image) {
         return Base64.getDecoder().decode(base64Image);
     }
 
-    //image 전달
-    private String sendImageToFlaskAPI(byte[] image) {
+    private String sendImageToModelAPI(byte[] image, String animalType, String modelType) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        // Flask API URL 설정 (예시 URL)
+        String flaskApiUrl = String.format("http://localhost:5000/api/diagnose/%s/%s", animalType, modelType);
+
+        // HTTP 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
+        // 멀티파트 요청 바디 생성
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("image", new ByteArrayResource(image) {
             @Override
             public String getFilename() {
-                return "image.png";
+                return "image.png"; // 임의의 파일 이름
             }
         });
 
+        // HTTP 요청 생성
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-        String flaskApiUrl = ""; // flaskAPI 주소 만들면 넣기
+
+        // Flask API에 요청 보내기
         ResponseEntity<String> response = restTemplate.postForEntity(flaskApiUrl, requestEntity, String.class);
+
+        // Flask API 응답 반환
         return response.getBody();
+    }
+
+    private HealthRecordDTO createHealthRecord(Long petId, String diagnosis) {
+        Pet pet = petRepository.findById(petId).orElseThrow(() -> new RuntimeException("Pet not found"));
+        HealthRecord healthRecord = new HealthRecord();
+        healthRecord.setPet(pet);
+        healthRecord.setRecordDate(new Date());
+        healthRecord.setDiagnosis(diagnosis);
+
+        HealthRecord savedRecord = healthRecordRepository.save(healthRecord);
+        return convertToDTO(savedRecord);
     }
 
     private HealthRecordDTO convertToDTO(HealthRecord healthRecord) {
         HealthRecordDTO healthRecordDTO = new HealthRecordDTO();
         healthRecordDTO.setId(healthRecord.getId());
-        healthRecordDTO.setPetid(healthRecord.getPet().getId()); // HealthRecord 엔티티에서 Pet ID 추출
+        healthRecordDTO.setPetId(healthRecord.getPet().getId());
         healthRecordDTO.setRecordDate(healthRecord.getRecordDate());
         healthRecordDTO.setDiagnosis(healthRecord.getDiagnosis());
         return healthRecordDTO;
