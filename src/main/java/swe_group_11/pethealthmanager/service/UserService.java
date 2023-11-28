@@ -4,6 +4,7 @@ package swe_group_11.pethealthmanager.service;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import swe_group_11.pethealthmanager.DTO.*;
@@ -30,10 +31,12 @@ public class UserService {
         return mapToDTO(savedUser);
     }
 
-    public boolean validateCredentials(UserLoginDTO userLoginDTO){
-        return userRepository.findByUsername(userLoginDTO.getUsername())
-                .map(user -> passwordEncoder.matches(userLoginDTO.getPassword(), user.getPassword()))
-                .orElse(false);
+    public boolean validateCredentials(UserLoginDTO loginDTO) {
+        Optional<User> user = userRepository.findByUsername(loginDTO.getId());
+        if (user.isPresent()) {
+            return passwordEncoder.matches(loginDTO.getPassword(), user.get().getPassword());
+        }
+        return false;
     }
 
     public UserLoginResponseDTO getUserInfo(String username) {
