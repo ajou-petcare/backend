@@ -29,7 +29,7 @@ public class UserController {
     public ResponseEntity<UserLoginResponseDTO> loginUser(@RequestBody UserLoginDTO loginDTO) {
         boolean isAuthentic = userService.validateCredentials(loginDTO);
         if (isAuthentic) {
-            UserLoginResponseDTO userInfo = userService.getUserInfo(loginDTO.getUsername());
+            UserLoginResponseDTO userInfo = userService.getUserInfo(loginDTO.getId());
             return ResponseEntity.ok(userInfo);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
