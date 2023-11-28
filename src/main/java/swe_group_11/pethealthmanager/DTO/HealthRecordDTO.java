@@ -8,7 +8,7 @@ import java.util.Date;
 @Data
 public class HealthRecordDTO {
     private Long id;
-    private Long petid;
+    private Long petId;
     private Date recordDate;
     private String diagnosis;
 

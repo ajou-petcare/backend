@@ -14,27 +14,25 @@ import swe_group_11.pethealthmanager.service.HealthRecordService;
 @RequestMapping("/api/checkup")
 public class CheckUpController {
 
+    private final CheckUpService checkUpService;
 
-    private CheckUpService checkUpService;
-
-    @PostMapping("/api/checkup/skin")
-    public ResponseEntity<HealthRecordDTO> performCheckUpEye(@RequestParam("petId") Long petId, @RequestParam("image") String base64Image) {
-        HealthRecordDTO healthRecordDTO = checkUpService.performCheckUpSkin(petId, base64Image);
+    @PostMapping("/skin")
+    public ResponseEntity<HealthRecordDTO> performSkinCheckUp(@RequestParam("petId") Long petId, @RequestParam("base64Image") String base64Image) {
+        HealthRecordDTO healthRecordDTO = checkUpService.performCheckUp(petId, base64Image, "skin");
         return ResponseEntity.ok(healthRecordDTO);
     }
 
-    @PostMapping("/api/checkup/eye")
-    public ResponseEntity<HealthRecordDTO> performCheckUpSkin(@RequestParam("petId") Long petId, @RequestParam("image") String base64Image) {
-        HealthRecordDTO healthRecordDTO = checkUpService.performCheckUpEye(petId, base64Image);
+    @PostMapping("/eye")
+    public ResponseEntity<HealthRecordDTO> performEyeCheckUp(@RequestParam("petId") Long petId, @RequestParam("base64Image") String base64Image) {
+        HealthRecordDTO healthRecordDTO = checkUpService.performCheckUp(petId, base64Image, "eye");
         return ResponseEntity.ok(healthRecordDTO);
     }
 
-    @PostMapping("/api/checkup/bcs")
-    public ResponseEntity<HealthRecordDTO> performCheckUpBcs(@RequestParam("petId") Long petId, @RequestParam("image") String base64Image) {
-        HealthRecordDTO healthRecordDTO = checkUpService.performCheckUpBcs(petId, base64Image);
+    @PostMapping("/bcs")
+    public ResponseEntity<HealthRecordDTO> performBcsCheckUp(@RequestParam("petId") Long petId, @RequestParam("base64Image") String base64Image) {
+        HealthRecordDTO healthRecordDTO = checkUpService.performCheckUp(petId, base64Image, "bcs");
         return ResponseEntity.ok(healthRecordDTO);
     }
-
-
 }
+
 
