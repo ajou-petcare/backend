@@ -24,7 +24,7 @@ public class HealthRecordService {
     }
 
     public HealthRecordDTO createHealthRecord(HealthRecordDTO healthRecordDTO) {
-        Pet pet = petRepository.findById(healthRecordDTO.getPetid()).orElseThrow(); // Pet 찾기
+        Pet pet = petRepository.findById(healthRecordDTO.getPetId()).orElseThrow(); // Pet 찾기
         HealthRecord healthRecord = new HealthRecord();
         healthRecord.setPet(pet); // Pet 객체 설정
         healthRecord.setRecordDate(healthRecordDTO.getRecordDate());
@@ -36,7 +36,7 @@ public class HealthRecordService {
     private HealthRecordDTO convertToDTO(HealthRecord healthRecord) {
         HealthRecordDTO healthRecordDTO = new HealthRecordDTO();
         healthRecordDTO.setId(healthRecord.getId());
-        healthRecordDTO.setPetid(healthRecord.getPet().getId()); // Pet ID 설정
+        healthRecordDTO.setPetId(healthRecord.getPet().getId()); // Pet ID 설정
         healthRecordDTO.setRecordDate(healthRecord.getRecordDate());
         healthRecordDTO.setDiagnosis(healthRecord.getDiagnosis());
         return healthRecordDTO;
