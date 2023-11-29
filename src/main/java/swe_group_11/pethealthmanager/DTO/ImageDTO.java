@@ -5,7 +5,8 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class UserLoginDTO {
-    private String username;
-    private String password;
+public class ImageDTO {
+    private String petName;
+    private String base64Image;
+
 }

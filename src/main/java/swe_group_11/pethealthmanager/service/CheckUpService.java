@@ -15,6 +15,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import swe_group_11.pethealthmanager.DTO.HealthRecordDTO;
+import swe_group_11.pethealthmanager.DTO.ImageDTO;
 import swe_group_11.pethealthmanager.model.HealthRecord;
 import swe_group_11.pethealthmanager.model.Pet;
 import swe_group_11.pethealthmanager.repository.HealthRecordRepository;
@@ -28,13 +29,13 @@ public class CheckUpService {
     private final PetRepository petRepository;
     private RestTemplate restTemplate = new RestTemplate();
 
-    public HealthRecordDTO performCheckUp(Long petId, String base64Image, String checkUpType) {
-        Pet pet = petRepository.findById(petId).orElseThrow(() -> new RuntimeException("Pet not found"));
+    public HealthRecordDTO performCheckUp(ImageDTO imageDTO, String checkUpType) {
+        Pet pet = petRepository.findByPetId(imageDTO.getPetName()).orElseThrow(() -> new RuntimeException("Pet not found"));
         String animalType = pet.getSpecies(); // 'dog' 또는 'cat'
-        byte[] decodedImage = decodeImage(base64Image);
+        byte[] decodedImage = decodeImage(imageDTO.getBase64Image());
         String diagnosis = sendImageToModelAPI(decodedImage, animalType, checkUpType);
 
-        return createHealthRecord(petId, diagnosis);
+        return createHealthRecord(imageDTO.getPetName(), diagnosis);
     }
 
     private byte[] decodeImage(String base64Image) {
@@ -70,8 +71,8 @@ public class CheckUpService {
         return response.getBody();
     }
 
-    private HealthRecordDTO createHealthRecord(Long petId, String diagnosis) {
-        Pet pet = petRepository.findById(petId).orElseThrow(() -> new RuntimeException("Pet not found"));
+    private HealthRecordDTO createHealthRecord(String petId, String diagnosis) {
+        Pet pet = petRepository.findByPetId(petId).orElseThrow(() -> new RuntimeException("Pet not found"));
         HealthRecord healthRecord = new HealthRecord();
         healthRecord.setPet(pet);
         healthRecord.setRecordDate(new Date());

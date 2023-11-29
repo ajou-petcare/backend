@@ -3,10 +3,7 @@ package swe_group_11.pethealthmanager.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import swe_group_11.pethealthmanager.DTO.UserDTO;
 import swe_group_11.pethealthmanager.DTO.UserLoginDTO;
 import swe_group_11.pethealthmanager.DTO.UserLoginResponseDTO;
@@ -26,10 +23,11 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserLoginResponseDTO> loginUser(@RequestBody UserLoginDTO loginDTO) {
+    public ResponseEntity<UserLoginResponseDTO> loginUser(@RequestParam String id, @RequestParam String password) {
+        UserLoginDTO loginDTO = new UserLoginDTO(id, password);
         boolean isAuthentic = userService.validateCredentials(loginDTO);
         if (isAuthentic) {
-            UserLoginResponseDTO userInfo = userService.getUserInfo(loginDTO.getId());
+            UserLoginResponseDTO userInfo = userService.getUserInfo(id);
             return ResponseEntity.ok(userInfo);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
