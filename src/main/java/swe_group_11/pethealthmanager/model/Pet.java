@@ -17,7 +17,7 @@ public class Pet {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String petName;
 
     @Column(nullable = false)
     private String species;

@@ -30,7 +30,7 @@ public class CheckUpService {
     private RestTemplate restTemplate = new RestTemplate();
 
     public HealthRecordDTO performCheckUp(ImageDTO imageDTO, String checkUpType) {
-        Pet pet = petRepository.findByPetId(imageDTO.getPetName()).orElseThrow(() -> new RuntimeException("Pet not found"));
+        Pet pet = petRepository.findByPetName(imageDTO.getPetName()).orElseThrow(() -> new RuntimeException("Pet not found"));
         String animalType = pet.getSpecies(); // 'dog' 또는 'cat'
         byte[] decodedImage = decodeImage(imageDTO.getBase64Image());
         String diagnosis = sendImageToModelAPI(decodedImage, animalType, checkUpType);
@@ -72,7 +72,7 @@ public class CheckUpService {
     }
 
     private HealthRecordDTO createHealthRecord(String petId, String diagnosis) {
-        Pet pet = petRepository.findByPetId(petId).orElseThrow(() -> new RuntimeException("Pet not found"));
+        Pet pet = petRepository.findByPetName(petId).orElseThrow(() -> new RuntimeException("Pet not found"));
         HealthRecord healthRecord = new HealthRecord();
         healthRecord.setPet(pet);
         healthRecord.setRecordDate(new Date());
