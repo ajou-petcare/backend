@@ -64,7 +64,7 @@ public class UserService {
     private PetDTO convertPetToDTO(Pet pet) {
         PetDTO petDTO = new PetDTO();
         petDTO.setId(pet.getId());
-        petDTO.setName(pet.getName());
+        petDTO.setPetName(pet.getPetName());
         petDTO.setSpecies(pet.getSpecies());
         // 기타 필요한 필드 설정
         return petDTO;
