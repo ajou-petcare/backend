@@ -11,7 +11,7 @@ import swe_group_11.pethealthmanager.DTO.UserRegisterDTO;
 import swe_group_11.pethealthmanager.service.UserService;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
