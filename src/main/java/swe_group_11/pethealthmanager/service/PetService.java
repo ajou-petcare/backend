@@ -19,7 +19,7 @@ public class PetService {
         User owner = userRepository.findById(petDTO.getOwnerId()).orElseThrow();
         Pet pet = new Pet();
         pet.setOwner(owner);
-        pet.setName(petDTO.getName());
+        pet.setPetName(petDTO.getPetName());
         pet.setSpecies(petDTO.getSpecies());
         Pet savedPet = petRepository.save(pet);
         return convertToDTO(savedPet);
@@ -29,7 +29,7 @@ public class PetService {
         PetDTO petDTO = new PetDTO();
         petDTO.setId(pet.getId());
         petDTO.setOwnerId(pet.getOwner().getId());
-        petDTO.setName(pet.getName());
+        petDTO.setPetName(pet.getPetName());
         petDTO.setSpecies(pet.getSpecies());
         return petDTO;
     }
