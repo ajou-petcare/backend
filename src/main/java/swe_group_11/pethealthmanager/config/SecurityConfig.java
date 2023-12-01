@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CsrfFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -20,13 +21,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // CSRF 보호 비활성화
-                .csrf(csrf -> csrf.disable())
-        // 추가 보안 구성
+                .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
+        // 추가 보안 설정들...
         ;
-
         return http.build();
     }
 }
+
 
 
