@@ -23,11 +23,11 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserLoginResponseDTO> loginUser(@RequestParam String id, @RequestParam String password) {
-        UserLoginDTO loginDTO = new UserLoginDTO(id, password);
+    public ResponseEntity<UserLoginResponseDTO> loginUser(@RequestBody UserLoginDTO userLoginDTO) {
+        UserLoginDTO loginDTO = new UserLoginDTO(userLoginDTO.getUsername(), userLoginDTO.getPassword());
         boolean isAuthentic = userService.validateCredentials(loginDTO);
         if (isAuthentic) {
-            UserLoginResponseDTO userInfo = userService.getUserInfo(id);
+            UserLoginResponseDTO userInfo = userService.getUserInfo(userLoginDTO.getUsername());
             return ResponseEntity.ok(userInfo);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
