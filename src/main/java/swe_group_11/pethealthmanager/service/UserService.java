@@ -7,6 +7,9 @@ import swe_group_11.pethealthmanager.model.Pet;
 import swe_group_11.pethealthmanager.model.User;
 import swe_group_11.pethealthmanager.repository.UserRepository;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,7 +21,7 @@ public class UserService {
         User user = new User();
         user.setUsername(registerDTO.getUsername());
         user.setEmail(registerDTO.getEmail());
-        user.setPassword(registerDTO.getPassword()); // 비밀번호 암호화 생략
+        user.setPassword(registerDTO.getPassword());
         User savedUser = userRepository.save(user);
         return mapToDTO(savedUser);
     }
@@ -38,7 +41,15 @@ public class UserService {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setUsername(user.getUsername());
-        userDTO.setPets(user.getPets().stream().map(this::convertPetToDTO).collect(Collectors.toList()));
+
+        // null 검사를 추가하여 안전하게 펫 목록을 설정
+        List<PetDTO> petDTOs = Optional.ofNullable(user.getPets())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(this::convertPetToDTO)
+                .collect(Collectors.toList());
+        userDTO.setPets(petDTOs);
+
         return userDTO;
     }
 
