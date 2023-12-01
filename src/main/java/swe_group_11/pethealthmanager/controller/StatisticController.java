@@ -1,4 +1,4 @@
-package swe_group_11.pethealthmanager.service;
+package swe_group_11.pethealthmanager.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
