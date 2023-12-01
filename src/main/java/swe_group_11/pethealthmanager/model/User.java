@@ -26,10 +26,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-
-
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true) // 없어지면 pet도 삭제
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pet> pets;
-
 }
 

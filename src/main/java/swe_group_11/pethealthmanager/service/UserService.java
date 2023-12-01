@@ -1,63 +1,44 @@
 package swe_group_11.pethealthmanager.service;
 
-
-
-
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import swe_group_11.pethealthmanager.DTO.*;
 import swe_group_11.pethealthmanager.model.Pet;
 import swe_group_11.pethealthmanager.model.User;
 import swe_group_11.pethealthmanager.repository.UserRepository;
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     public UserDTO registerUser(UserRegisterDTO registerDTO) {
         User user = new User();
         user.setUsername(registerDTO.getUsername());
-        user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         user.setEmail(registerDTO.getEmail());
+        user.setPassword(registerDTO.getPassword()); // 비밀번호 암호화 생략
         User savedUser = userRepository.save(user);
         return mapToDTO(savedUser);
     }
 
     public boolean validateCredentials(UserLoginDTO loginDTO) {
-        Optional<User> user = userRepository.findByUsername(loginDTO.getUsername());
-        return user.filter(value -> passwordEncoder.matches(loginDTO.getPassword(), value.getPassword())).isPresent();
+        return userRepository.findByUsername(loginDTO.getUsername())
+                .map(user -> user.getPassword().equals(loginDTO.getPassword()))
+                .orElse(false);
     }
 
-    public UserLoginResponseDTO getUserInfo(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        return convertToLoginResponseDTO(user);
+    public UserDTO getUserInfo(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        return mapToDTO(user);
     }
-
-    private UserLoginResponseDTO convertToLoginResponseDTO(User user) {
-        UserLoginResponseDTO responseDTO = new UserLoginResponseDTO();
-        responseDTO.setUsername(user.getUsername());
-        responseDTO.setPets(user.getPets().stream()
-                .map(this::convertPetToDTO)
-                .collect(Collectors.toList()));
-        return responseDTO;
-    }
-
-
 
     private UserDTO mapToDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setUsername(user.getUsername());
-        userDTO.setPets(user.getPets().stream()
-                .map(this::convertPetToDTO)
-                .collect(Collectors.toList()));
+        userDTO.setPets(user.getPets().stream().map(this::convertPetToDTO).collect(Collectors.toList()));
         return userDTO;
     }
 
@@ -66,9 +47,7 @@ public class UserService {
         petDTO.setId(pet.getId());
         petDTO.setPetName(pet.getPetName());
         petDTO.setSpecies(pet.getSpecies());
-        // 기타 필요한 필드 설정
         return petDTO;
     }
-
-
 }
+
