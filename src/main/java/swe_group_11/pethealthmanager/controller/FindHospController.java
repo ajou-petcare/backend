@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/api/findHosp")
 public class FindHospController {
 
-    @GetMapping("/findHosp")
+    @GetMapping("/findNearHosp")
     public ResponseEntity<List<HospitalDTO>> findNearbyHospitals(@RequestParam double latitude, @RequestParam double longitude) {
         // 요청된 위치에 관계없이 미리 정의된 병원 목록을 반환합니다.
         List<HospitalDTO> nearbyHospitals = Arrays.asList(
